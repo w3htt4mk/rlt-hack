@@ -27,7 +27,7 @@ class authController {
 				return res.status(400).json({message: "Already exists"})
 			}
 			const hashPassword = bcrypt.hashSync(password, 7)
-			const user = new User({email, password: hashPassword, role: userRole})
+			const user = new User({...req.body, password:hashPassword})
 			await user.save()
 			return res.json({message: "Succesfully registered"})
 		} catch (e) {
@@ -57,7 +57,6 @@ class authController {
 
 	async update(req, res) {
 		try {
-			const {phone, name, surname, patronimyc, INN, KPP, level, ep} = req.body
 			const token = req.headers.authorization.split(' ')[1]
 			if (!token){
 				return res.status(403).json({message: "Not authorized"})
@@ -67,6 +66,7 @@ class authController {
 			const id = decodedData.id
 
 			const user = await User.findByIdAndUpdate({_id: id}, {...req.body})
+			res.status(200).json({message: "Updated"})
 		} catch (error) {
 			console.log(error)
 		}
